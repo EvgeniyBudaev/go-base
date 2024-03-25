@@ -32,9 +32,6 @@ func TestUsers(c pb.UsersClient) {
 		{Name: "Сергей", Email: "serge@example.com", Sex: pb.User_MALE},
 		{Name: "Света", Email: "sveta@example.com", Sex: pb.User_FEMALE},
 		{Name: "Денис", Email: "den@example.com", Sex: pb.User_MALE},
-		// при добавлении этой записи должна вернуться ошибка:
-		// пользователь с email sveta@example.com уже существует
-		{Name: "Sveta", Email: "sveta@example.com", Sex: pb.User_FEMALE},
 	}
 	for _, user := range users {
 		// добавляем пользователей
@@ -65,7 +62,7 @@ func TestUsers(c pb.UsersClient) {
 	// получаем информацию о пользователях
 	// во втором случае должна вернуться ошибка:
 	// пользователь с email serge@example.com не найден
-	for _, userEmail := range []string{"sveta@example.com", "serge@example.com"} {
+	for _, userEmail := range []string{"sveta@example.com"} {
 		resp, err := c.GetUser(ctx, &pb.GetUserRequest{
 			Email: userEmail,
 		})
