@@ -1,4 +1,4 @@
-package main
+package app
 
 import (
 	"context"
@@ -54,6 +54,7 @@ func (s *UsersServer) ListUsers(ctx context.Context, in *pb.ListUsersRequest) (*
 		Count:  int32(len(list)),
 		Emails: list[offset:end],
 	}
+	fmt.Println("gRPC ListUsers: ", response)
 	return &response, nil
 }
 
