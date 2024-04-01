@@ -39,7 +39,7 @@ func main() {
 		if err := s.Serve(listen); err != nil {
 			log.Fatal(err)
 		}
-		defer wg.Done()
+		wg.Done()
 	}()
 
 	wg.Add(1)
@@ -93,7 +93,7 @@ func main() {
 		<-forever
 
 		log.Printf("Starting server service on port %s\n", application.Config.Port)
-		defer wg.Done()
+		wg.Done()
 	}()
 
 	wg.Add(1)
@@ -102,7 +102,7 @@ func main() {
 		if err := application.StartHTTPServer(ctx); err != nil {
 			application.Logger.Fatal("error func main, method StartHTTPServer by path cmd/main.go", zap.Error(err))
 		}
-		defer wg.Done()
+		wg.Done()
 	}()
-	defer wg.Wait()
+	wg.Wait()
 }
