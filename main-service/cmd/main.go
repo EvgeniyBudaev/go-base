@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"github.com/EvgeniyBudaev/go-base/main-service/internal/app"
 	pb "github.com/EvgeniyBudaev/go-base/proto"
@@ -9,10 +10,15 @@ import (
 	"google.golang.org/grpc"
 	"log"
 	"net"
+	"os/signal"
 	"sync"
+	"syscall"
 )
 
 func main() {
+	ctx, cancelCtx := signal.NotifyContext(context.Background(), syscall.SIGQUIT, syscall.SIGTERM, syscall.SIGINT)
+	defer cancelCtx()
+
 	var wg sync.WaitGroup
 	application := app.NewApp()
 
@@ -33,7 +39,7 @@ func main() {
 		if err := s.Serve(listen); err != nil {
 			log.Fatal(err)
 		}
-		wg.Done()
+		defer wg.Done()
 	}()
 
 	wg.Add(1)
@@ -87,16 +93,16 @@ func main() {
 		<-forever
 
 		log.Printf("Starting server service on port %s\n", application.Config.Port)
-		wg.Done()
+		defer wg.Done()
 	}()
 
 	wg.Add(1)
 	go func() {
 		// REST API
-		if err := application.StartHTTPServer(); err != nil {
+		if err := application.StartHTTPServer(ctx); err != nil {
 			application.Logger.Fatal("error func main, method StartHTTPServer by path cmd/main.go", zap.Error(err))
 		}
-		wg.Done()
+		defer wg.Done()
 	}()
-	wg.Wait()
+	defer wg.Wait()
 }
